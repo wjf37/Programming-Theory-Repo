@@ -18,13 +18,15 @@ public class Primate : MonoBehaviour
     private bool friendDetect;
     private int maxHealth;
     private int currentHealth;
-    private List<Transform> activeUnits = new List<Transform>();
+    private GameManager gameManager;
+    private List<Transform> activeUnits = new();
 
     // Start is called before the first frame update
     void Start()
     {
         rb = GetComponent<Rigidbody>();
         currentHealth = maxHealth;
+        gameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
     }
 
     // Update is called once per frame
