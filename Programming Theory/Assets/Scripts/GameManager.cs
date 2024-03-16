@@ -1,16 +1,14 @@
 using System.Collections;
 using System.Collections.Generic;
-using UnityEditor.ShaderKeywordFilter;
 using UnityEngine;
 
 public class GameManager : MonoBehaviour
 {
-    private List<Transform> activeUnits = new();
-    public List<Transform> ActiveUnits{
-        get { return new List<Transform>(activeUnits); }
-    }
+    public delegate void ActiveUnitListEventHandler(List<Transform> updatedList);
+    public event ActiveUnitListEventHandler OnListUpdated;
     public GameObject selected;
     public List<GameObject> selectedUnitType;
+    private List<Transform> activeUnits = new();
     private RectTransform selectedRT;
     private int selectedUnitTypeIndex = 0;
 
@@ -58,9 +56,11 @@ public class GameManager : MonoBehaviour
 
     public void OnUnitSpawned(Transform unitTransform){
         activeUnits.Add(unitTransform);
+        OnListUpdated?.Invoke(activeUnits);
     }
 
     public void OnUnitDestroyed(Transform unitTransform){
         activeUnits.Remove(unitTransform);
+        OnListUpdated?.Invoke(activeUnits);
     }
 }
