@@ -256,9 +256,10 @@ GameObject:
   - component: {fileID: 4316620157561950358}
   - component: {fileID: 3467102929156782458}
   - component: {fileID: 2756140540800824331}
+  - component: {fileID: 5268803165105154374}
   m_Layer: 0
   m_Name: Gorilla
-  m_TagString: Untagged
+  m_TagString: Gorilla
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -277,6 +278,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 3334860482813978958}
+  - {fileID: 2775324118879001107}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!54 &3467102929156782458
@@ -327,6 +329,19 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 1.5251818, y: 1.1924931, z: 1}
   m_Center: {x: 0.029056907, y: 0.58058935, z: 0}
+--- !u!114 &5268803165105154374
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3666872898965882549}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c91dd4971b4c18f43a18f11fc9d5c315, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  stone: {fileID: 3234406282993894512, guid: 6a36caab39342d640805bea26107e5d5, type: 3}
 --- !u!1 &4655515751047760268
 GameObject:
   m_ObjectHideFlags: 0
@@ -432,6 +447,37 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 1, y: 1, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!1 &5743064298644605119
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2775324118879001107}
+  m_Layer: 0
+  m_Name: ThrowPos
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &2775324118879001107
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5743064298644605119}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0.7071068, z: 0, w: 0.7071068}
+  m_LocalPosition: {x: 0, y: 0.435, z: -1.921}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 4316620157561950358}
+  m_LocalEulerAnglesHint: {x: 0, y: 90, z: 0}
 --- !u!1 &6086188670129196757
 GameObject:
   m_ObjectHideFlags: 0

@@ -582,9 +582,10 @@ GameObject:
   - component: {fileID: 3391301292948120469}
   - component: {fileID: 2002988726160896699}
   - component: {fileID: 1800474705461648424}
+  - component: {fileID: 4028473690504326673}
   m_Layer: 0
   m_Name: Chimp
-  m_TagString: Untagged
+  m_TagString: Chimp
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -603,6 +604,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 5310399181066302211}
+  - {fileID: 3402732961579483830}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!54 &2002988726160896699
@@ -653,6 +655,19 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 0.592052, y: 1.1540153, z: 0.6310246}
   m_Center: {x: -0.023426294, y: 0.60438156, z: -0.39692664}
+--- !u!114 &4028473690504326673
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4497495181396263426}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c91dd4971b4c18f43a18f11fc9d5c315, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  stone: {fileID: 3234406282993894512, guid: 6a36caab39342d640805bea26107e5d5, type: 3}
 --- !u!1 &4571464066172931231
 GameObject:
   m_ObjectHideFlags: 0
@@ -863,6 +878,37 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 1, y: 1, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!1 &5829688718890173451
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 3402732961579483830}
+  m_Layer: 0
+  m_Name: ThrowPos
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &3402732961579483830
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5829688718890173451}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0.7071068, z: 0, w: 0.7071068}
+  m_LocalPosition: {x: -0, y: 0.486, z: -1.817}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 3391301292948120469}
+  m_LocalEulerAnglesHint: {x: 0, y: 90, z: 0}
 --- !u!1 &5882162748855419506
 GameObject:
   m_ObjectHideFlags: 0

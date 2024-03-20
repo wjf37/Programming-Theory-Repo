@@ -1,25 +1,33 @@
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
 
 public class Primate : MonoBehaviour
 {
+    [SerializeField] GameObject stone;
     private Rigidbody rb;
     private float speed = 1;
-    private float moveRange = 5;
+    private float moveRange = 2;
     private float sightRange = 25; 
     private float throwRange = 15; 
     private float attackRange = 5;
+    private float throwForce = 10;
+    private float rotationSpeed = 700;
     //private bool enemyDetect;
     //private bool friendDetect;
     private int maxHealth = 100;
     private int currentHealth;
+    private int throwDmg = 15;
+    private int attackDmg = 20;
     private GameManager gameManager;
     private List<Transform> activeUnits = new();
-    private List<(Transform,float)> seeUnits = new();
-    private List<(Transform,float)> throwUnits = new();
-    private List<(Transform,float)> attackUnits = new();
+    private Transform closestUnit;
+    private Transform throwPos;
+    private bool randomMoveStarted = false;
+    private bool enemyInRange = false;
+    //private bool posFound = false;
+    private Vector3 randomMove;
+    private Vector3 finishPos;
 
     // Start is called before the first frame update
     void Start()
@@ -28,29 +36,87 @@ public class Primate : MonoBehaviour
         currentHealth = maxHealth;
         gameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
         gameManager.OnListUpdated += HandleListUpdate;
+        throwPos = transform.GetChild(1);
     }
 
     // Update is called once per frame
     void Update()
     {
         Detect();
+        if (closestUnit != null)
+        {
+            AttackDetect();
+            ThrowDetect();
+        }
     }
 
-    public virtual void Move(){
-        //if ()
-        Vector3 randomMove = new Vector3(Random.Range(-moveRange,moveRange),0,Random.Range(-moveRange,moveRange));
-        rb.MovePosition(rb.position + randomMove * Time.deltaTime * speed);
+    void FixedUpdate()
+    {
+        Move();
+
+    }
+    private void Move(){
+        if (closestUnit != null)
+        {
+            if (Vector3.Distance(transform.position, closestUnit.position) < sightRange)
+            {
+                randomMoveStarted = false;
+                enemyInRange = true;
+                Vector3 targetMove = closestUnit.position - rb.position;
+                Rotate(targetMove.x, targetMove.z);
+                rb.MovePosition(rb.position + targetMove * Time.deltaTime * speed);
+            }
+
+            else
+            {
+                enemyInRange = false;
+            }
+        }
+
+        if (!enemyInRange)
+        {
+            GenPos();
+            MoveFin();
+        }
     }
 
-    public virtual void Throw(Primate enemy){
-        enemy.TakeDamage(10);
+    private void GenPos()
+    {
+        if (!randomMoveStarted)
+        {
+            randomMove = new Vector3(Random.Range(-moveRange,moveRange), 0, Random.Range(-moveRange,moveRange));
+            finishPos = rb.position + randomMove;
+            randomMoveStarted = true;
+        }
+    }
+    private void MoveFin()
+    {
+        if (randomMoveStarted)
+        {
+            Rotate(randomMove.x, randomMove.z);
+            rb.MovePosition(rb.position + randomMove * Time.deltaTime * speed);
+        }
+        if (Vector3.Distance(rb.position, finishPos) < 0.3f)
+        {
+            randomMoveStarted = false;
+            rb.velocity = Vector3.zero;
+        }
     }
 
-    public virtual void Attack(Primate enemy){
-        enemy.TakeDamage(20);
+    private void Throw(GameObject enemy)
+    {
+        Vector3 targetDir = enemy.transform.position - rb.position;
+        Instantiate(stone, throwPos);
+        stone.GetComponent<ThrowStone>().Throw(targetDir, throwForce, throwDmg);
     }
 
-    public void TakeDamage(int damage){
+    private void Attack(Primate enemy)
+    {
+        enemy.TakeDamage(attackDmg);
+    }
+
+    public void TakeDamage(int damage)
+    {
         currentHealth -= damage;
 
         if (currentHealth<=0){
@@ -59,94 +125,43 @@ public class Primate : MonoBehaviour
     }
 
     private void Detect(){
-        //apes check for their closest targets
-
-        //Vector3 targetMove = unit.position - rb.position;
-        //rb.MovePosition(rb.position + targetMove * Time.deltaTime * speed);
+        float closestDist = 1000;
         
-        //check if ape can see unit. if it can then move to check if in throw range. 
-        foreach (Transform unit in activeUnits){
+        foreach (Transform unit in activeUnits)
+        {
             float distance = Vector3.Distance(transform.position, unit.position);
 
-            if (distance <= sightRange){
-                if (!ContainsUnit(unit, seeUnits)){
-                    seeUnits.Add((unit, distance));
-                }
-                
-                else
-                {
-                    UpdateDist(unit, seeUnits, distance);
-                }
-                if (distance <= throwRange){
-                    if (!ContainsUnit(unit, throwUnits)){
-                        throwUnits.Add((unit, distance));
-                    }
-
-                    else
-                    {
-                        UpdateDist(unit, throwUnits, distance);
-                    }
-
-                    if (distance <= attackRange){
-                        if (!ContainsUnit(unit, attackUnits)){
-                            attackUnits.Add((unit, distance));
-                        }
-
-                        else
-                        {
-                            UpdateDist(unit, attackUnits, distance);
-                        }
-                    }
-
-                    else if (ContainsUnit(unit, attackUnits)){
-                        attackUnits.RemoveAll(t => t.Item1 == unit);
-                    }
-                }
-
-                else if (ContainsUnit(unit, throwUnits)){
-                    throwUnits.RemoveAll(t => t.Item1 == unit);
-                }
-            }
-
-            else if (ContainsUnit(unit, seeUnits)){
-                seeUnits.RemoveAll(t => t.Item1 == unit);
+            if (!gameObject.CompareTag(unit.tag) && closestDist > distance) //if not same tag, and the new distance is less.
+            {
+                closestUnit = unit;
             }
         }
     }
 
-    private void CalcClosest()
+    private void AttackDetect()
     {
-        // foreach (Transform unit in seeUnits)
-        // {
+        if (Vector3.Distance(transform.position, closestUnit.position) < attackRange)
+        {
+            Attack(closestUnit.GetComponent<Primate>());
+        }
+    }
 
-        // }
+    private void ThrowDetect()
+    {
+        if (Vector3.Distance(transform.position, closestUnit.position) < throwRange)
+        {
+            Throw(closestUnit.gameObject);
+        }
+    }
+
+    private void Rotate(float x, float z)
+    {
+        float targetAngle = Mathf.Atan2(-x, -z) * Mathf.Rad2Deg;
+        Quaternion targetRotation = Quaternion.Euler(0f, targetAngle, 0f);
+        rb.rotation = Quaternion.RotateTowards(rb.rotation, targetRotation, Time.deltaTime * rotationSpeed);
     }
 
     private void HandleListUpdate(List<Transform> updatedList){
         activeUnits = updatedList;
-    }
-
-    private bool ContainsUnit(Transform iUnit, List<(Transform, float)> unitList)
-    {
-        foreach (var unitTuple in unitList)
-        {
-            if(unitTuple.Item1 == iUnit)
-            {
-                return true;
-            }
-        }
-
-        return false;
-    }
-
-    private void UpdateDist(Transform iUnit, List<(Transform, float)> unitList, float distance)
-    {
-        for (int i = 0; i < unitList.Count; i++)
-        {
-            if(unitList[i].Item1 == iUnit)
-            {
-                unitList[i] = (iUnit, distance);
-            }
-        }
     }
 }
