@@ -7,9 +7,9 @@ public class ThrowStone : MonoBehaviour
     private Rigidbody rb;
     private int damage;
     // Start is called before the first frame update
-    void Start()
+    void Awake()
     {
-        rb = GetComponent<Rigidbody>();
+        
     }
 
     // Update is called once per frame
@@ -20,13 +20,14 @@ public class ThrowStone : MonoBehaviour
 
     public void Throw(Vector3 dir, float mag, int t_damage)
     {
+        rb = GetComponent<Rigidbody>();
         rb.AddForce(dir * mag, ForceMode.Impulse);
         damage = t_damage;
     }
 
     void OnCollisionEnter(Collision other)
     {
-        if (!other.gameObject.CompareTag("Ground"))
+        if (other.gameObject.CompareTag("Orangutan") || other.gameObject.CompareTag("Chimp") || other.gameObject.CompareTag("Gorilla"))
         {
             other.gameObject.GetComponent<Primate>().TakeDamage(damage);
         }

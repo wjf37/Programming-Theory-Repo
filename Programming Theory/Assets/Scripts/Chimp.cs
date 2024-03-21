@@ -2,17 +2,15 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Chimp : MonoBehaviour
+public class Chimp : Primate
 {
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
+    new protected float speed = 200.5f;
+    new protected float throwRange = 15; 
+    new protected float throwForce = 4;
+    new protected float throwCooldown = 1f;
+    new protected int maxHealth = 100;
+    new protected int throwDmg = 15;
+    new protected int attackDmg = 20;
 
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
+
 }

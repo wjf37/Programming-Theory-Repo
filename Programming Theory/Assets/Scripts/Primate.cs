@@ -1,33 +1,36 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting.FullSerializer;
 using UnityEngine;
 
 public class Primate : MonoBehaviour
 {
     [SerializeField] GameObject stone;
     private Rigidbody rb;
-    private float speed = 1;
-    private float moveRange = 2;
-    private float sightRange = 25; 
-    private float throwRange = 15; 
-    private float attackRange = 5;
-    private float throwForce = 10;
-    private float rotationSpeed = 700;
-    //private bool enemyDetect;
-    //private bool friendDetect;
-    private int maxHealth = 100;
-    private int currentHealth;
-    private int throwDmg = 15;
-    private int attackDmg = 20;
     private GameManager gameManager;
     private List<Transform> activeUnits = new();
     private Transform closestUnit;
     private Transform throwPos;
     private bool randomMoveStarted = false;
     private bool enemyInRange = false;
-    //private bool posFound = false;
+    private bool throwOnCooldown = false;
+    private bool attackOnCooldown = false;
     private Vector3 randomMove;
     private Vector3 finishPos;
+    private float moveRange = 2;
+    private float sightRange = 20; 
+    private float attackRange = 3;
+    private float rotationSpeed = 700;
+    private int currentHealth;
+    protected float speed = 0.5f;
+    protected float throwRange = 15; 
+    protected float throwForce = 4;
+    protected float throwCooldown = 1f;
+    protected float attackCooldown = 1f;
+    protected int maxHealth = 100;
+    protected int throwDmg = 15;
+    protected int attackDmg = 20;
+
 
     // Start is called before the first frame update
     void Start()
@@ -73,6 +76,11 @@ public class Primate : MonoBehaviour
             }
         }
 
+        else
+        {
+            enemyInRange = false;
+        }
+
         if (!enemyInRange)
         {
             GenPos();
@@ -103,16 +111,22 @@ public class Primate : MonoBehaviour
         }
     }
 
-    private void Throw(GameObject enemy)
+    IEnumerator Throw(GameObject enemy)
     {
+        throwOnCooldown = true;
         Vector3 targetDir = enemy.transform.position - rb.position;
-        Instantiate(stone, throwPos);
-        stone.GetComponent<ThrowStone>().Throw(targetDir, throwForce, throwDmg);
+        GameObject thrownStone = Instantiate(stone, throwPos.position, transform.rotation);
+        thrownStone.GetComponent<ThrowStone>().Throw(targetDir, throwForce, throwDmg);
+        yield return new WaitForSeconds(throwCooldown);
+        throwOnCooldown = false;
     }
 
-    private void Attack(Primate enemy)
+    IEnumerator Attack(Primate enemy)
     {
+        attackOnCooldown = true;
         enemy.TakeDamage(attackDmg);
+        yield return new WaitForSeconds(attackCooldown);
+        attackOnCooldown = false;
     }
 
     public void TakeDamage(int damage)
@@ -121,12 +135,14 @@ public class Primate : MonoBehaviour
 
         if (currentHealth<=0){
             Destroy(gameObject);
+            gameManager.OnUnitDestroyed(transform);
         }
     }
 
     private void Detect(){
         float closestDist = 1000;
-        
+        bool closestUnitExists = false;
+
         foreach (Transform unit in activeUnits)
         {
             float distance = Vector3.Distance(transform.position, unit.position);
@@ -134,7 +150,18 @@ public class Primate : MonoBehaviour
             if (!gameObject.CompareTag(unit.tag) && closestDist > distance) //if not same tag, and the new distance is less.
             {
                 closestUnit = unit;
+                closestUnitExists = true;
             }
+
+            if (closestUnit == unit)
+            {
+                closestUnitExists = true;
+            }
+        }
+
+        if (!closestUnitExists)
+        {
+            closestUnit = null;
         }
     }
 
@@ -142,15 +169,15 @@ public class Primate : MonoBehaviour
     {
         if (Vector3.Distance(transform.position, closestUnit.position) < attackRange)
         {
-            Attack(closestUnit.GetComponent<Primate>());
+            StartCoroutine(Attack(closestUnit.GetComponent<Primate>()));
         }
     }
 
     private void ThrowDetect()
     {
-        if (Vector3.Distance(transform.position, closestUnit.position) < throwRange)
+        if (Vector3.Distance(transform.position, closestUnit.position) < throwRange && !throwOnCooldown)
         {
-            Throw(closestUnit.gameObject);
+            StartCoroutine(Throw(closestUnit.gameObject));
         }
     }
 
