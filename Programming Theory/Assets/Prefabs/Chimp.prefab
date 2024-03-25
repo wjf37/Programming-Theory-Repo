@@ -582,7 +582,6 @@ GameObject:
   - component: {fileID: 3391301292948120469}
   - component: {fileID: 2002988726160896699}
   - component: {fileID: 1800474705461648424}
-  - component: {fileID: 4028473690504326673}
   - component: {fileID: 504327270747285068}
   m_Layer: 0
   m_Name: Chimp
@@ -656,19 +655,6 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 0.592052, y: 1.1540153, z: 0.6310246}
   m_Center: {x: -0.023426294, y: 0.60438156, z: -0.39692664}
---- !u!114 &4028473690504326673
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4497495181396263426}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c91dd4971b4c18f43a18f11fc9d5c315, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  stone: {fileID: 3234406282993894512, guid: 6a36caab39342d640805bea26107e5d5, type: 3}
 --- !u!114 &504327270747285068
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -681,6 +667,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6bfb6ba288e524541b0b16ea1c5bb102, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  speed: 0.5
+  attackCooldown: 0.9
+  maxHealth: 120
+  attackDmg: 20
+  throwRange: 15
+  throwForce: 4
+  throwCooldown: 1
+  throwDmg: 15
   stone: {fileID: 3234406282993894512, guid: 6a36caab39342d640805bea26107e5d5, type: 3}
 --- !u!1 &4571464066172931231
 GameObject:

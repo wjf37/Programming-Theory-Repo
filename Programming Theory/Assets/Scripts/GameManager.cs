@@ -9,6 +9,7 @@ public class GameManager : MonoBehaviour
     public GameObject selected;
     public List<GameObject> selectedUnitType;
     private List<Transform> activeUnits = new();
+    public List<Transform> ActiveUnits { get; private set; }
     private RectTransform selectedRT;
     private int selectedUnitTypeIndex = 0;
 
@@ -48,7 +49,6 @@ public class GameManager : MonoBehaviour
 
         if (Physics.Raycast(ray, out hit))
         {
-            // Instantiate object at the hit point
             GameObject spawnedUnit = Instantiate(selectedUnitType[selectedUnitTypeIndex], hit.point, Quaternion.identity);
             OnUnitSpawned(spawnedUnit.transform);
         }

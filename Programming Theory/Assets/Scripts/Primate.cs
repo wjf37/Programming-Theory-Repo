@@ -5,51 +5,42 @@ using UnityEngine;
 
 public class Primate : MonoBehaviour
 {
-    [SerializeField] GameObject stone;
-    private Rigidbody rb;
-    private GameManager gameManager;
-    private List<Transform> activeUnits = new();
-    private Transform closestUnit;
-    private Transform throwPos;
-    private bool randomMoveStarted = false;
-    private bool enemyInRange = false;
-    private bool throwOnCooldown = false;
-    private bool attackOnCooldown = false;
-    private Vector3 randomMove;
-    private Vector3 finishPos;
-    private float moveRange = 2;
-    private float sightRange = 20; 
-    private float attackRange = 3;
-    private float rotationSpeed = 700;
-    private int currentHealth;
-    protected float speed = 0.5f;
-    protected float throwRange = 15; 
-    protected float throwForce = 4;
-    protected float throwCooldown = 1f;
-    protected float attackCooldown = 1f;
-    protected int maxHealth = 100;
-    protected int throwDmg = 15;
-    protected int attackDmg = 20;
-
+    protected Rigidbody rb;
+    protected GameManager gameManager;
+    protected List<Transform> activeUnits = new();
+    protected Transform closestUnit;
+    protected bool randomMoveStarted = false;
+    protected bool enemyInRange = false;
+    protected bool attackOnCooldown = false;
+    protected Vector3 randomMove;
+    protected Vector3 finishPos;
+    protected float moveRange = 2;
+    protected float sightRange = 20; 
+    protected float attackRange = 3;
+    protected float rotationSpeed = 700;
+    protected int currentHealth;
+    [SerializeField] protected float speed = 0.5f;
+    [SerializeField] protected float attackCooldown = 1f;
+    [SerializeField] protected int maxHealth = 100;
+    [SerializeField] protected int attackDmg = 20;
 
     // Start is called before the first frame update
-    void Start()
+    protected virtual void Start()
     {
         rb = GetComponent<Rigidbody>();
         currentHealth = maxHealth;
         gameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
         gameManager.OnListUpdated += HandleListUpdate;
-        throwPos = transform.GetChild(1);
+        //activeUnits = gameManager.ActiveUnits;
     }
 
     // Update is called once per frame
-    void Update()
+    protected virtual void Update()
     {
         Detect();
         if (closestUnit != null)
         {
             AttackDetect();
-            ThrowDetect();
         }
     }
 
@@ -58,16 +49,13 @@ public class Primate : MonoBehaviour
         Move();
 
     }
+
     private void Move(){
         if (closestUnit != null)
         {
             if (Vector3.Distance(transform.position, closestUnit.position) < sightRange)
             {
-                randomMoveStarted = false;
-                enemyInRange = true;
-                Vector3 targetMove = closestUnit.position - rb.position;
-                Rotate(targetMove.x, targetMove.z);
-                rb.MovePosition(rb.position + targetMove * Time.deltaTime * speed);
+                MoveToEnemy();
             }
 
             else
@@ -88,6 +76,15 @@ public class Primate : MonoBehaviour
         }
     }
 
+    protected virtual void MoveToEnemy()
+    {
+        randomMoveStarted = false;
+        enemyInRange = true;
+        Vector3 targetMove = closestUnit.position - rb.position;
+        Rotate(targetMove.x, targetMove.z);
+        rb.MovePosition(rb.position + targetMove * Time.deltaTime * speed);
+    }
+    
     private void GenPos()
     {
         if (!randomMoveStarted)
@@ -97,6 +94,7 @@ public class Primate : MonoBehaviour
             randomMoveStarted = true;
         }
     }
+
     private void MoveFin()
     {
         if (randomMoveStarted)
@@ -111,17 +109,7 @@ public class Primate : MonoBehaviour
         }
     }
 
-    IEnumerator Throw(GameObject enemy)
-    {
-        throwOnCooldown = true;
-        Vector3 targetDir = enemy.transform.position - rb.position;
-        GameObject thrownStone = Instantiate(stone, throwPos.position, transform.rotation);
-        thrownStone.GetComponent<ThrowStone>().Throw(targetDir, throwForce, throwDmg);
-        yield return new WaitForSeconds(throwCooldown);
-        throwOnCooldown = false;
-    }
-
-    IEnumerator Attack(Primate enemy)
+    protected IEnumerator Attack(Primate enemy)
     {
         attackOnCooldown = true;
         enemy.TakeDamage(attackDmg);
@@ -139,7 +127,7 @@ public class Primate : MonoBehaviour
         }
     }
 
-    private void Detect(){
+    protected void Detect(){
         float closestDist = 1000;
         bool closestUnitExists = false;
 
@@ -165,19 +153,11 @@ public class Primate : MonoBehaviour
         }
     }
 
-    private void AttackDetect()
+    protected virtual void AttackDetect()
     {
-        if (Vector3.Distance(transform.position, closestUnit.position) < attackRange)
+        if (Vector3.Distance(transform.position, closestUnit.position) < attackRange && !attackOnCooldown)
         {
             StartCoroutine(Attack(closestUnit.GetComponent<Primate>()));
-        }
-    }
-
-    private void ThrowDetect()
-    {
-        if (Vector3.Distance(transform.position, closestUnit.position) < throwRange && !throwOnCooldown)
-        {
-            StartCoroutine(Throw(closestUnit.gameObject));
         }
     }
 
