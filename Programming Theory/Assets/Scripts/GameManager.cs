@@ -51,6 +51,7 @@ public class GameManager : MonoBehaviour
         {
             GameObject spawnedUnit = Instantiate(selectedUnitType[selectedUnitTypeIndex], hit.point, Quaternion.identity);
             OnUnitSpawned(spawnedUnit.transform);
+            spawnedUnit.GetComponent<Primate>().InitUnitList(activeUnits);
         }
     }
 

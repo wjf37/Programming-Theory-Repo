@@ -1,6 +1,5 @@
 using System.Collections;
 using System.Collections.Generic;
-using Unity.VisualScripting.FullSerializer;
 using UnityEngine;
 
 public class Primate : MonoBehaviour
@@ -31,7 +30,6 @@ public class Primate : MonoBehaviour
         currentHealth = maxHealth;
         gameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
         gameManager.OnListUpdated += HandleListUpdate;
-        //activeUnits = gameManager.ActiveUnits;
     }
 
     // Update is called once per frame
@@ -48,6 +46,11 @@ public class Primate : MonoBehaviour
     {
         Move();
 
+    }
+    
+    public void InitUnitList(List<Transform> initUnits)
+    {
+        activeUnits.AddRange(initUnits);
     }
 
     private void Move(){
@@ -170,5 +173,10 @@ public class Primate : MonoBehaviour
 
     private void HandleListUpdate(List<Transform> updatedList){
         activeUnits = updatedList;
+    }
+
+    private void OnDestroy()
+    {
+        gameManager.OnListUpdated -= HandleListUpdate;
     }
 }

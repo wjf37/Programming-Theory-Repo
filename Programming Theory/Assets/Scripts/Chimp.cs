@@ -28,7 +28,6 @@ public class Chimp : Primate
             ThrowDetect();
         }
     }
-
     IEnumerator Throw(GameObject enemy)
     {
         throwOnCooldown = true;
