@@ -7,6 +7,7 @@ public class Primate : MonoBehaviour
     protected Rigidbody rb;
     protected GameManager gameManager;
     protected List<Transform> activeUnits = new();
+    private Transform arms;
     protected Transform closestUnit;
     protected bool randomMoveStarted = false;
     protected bool enemyInRange = false;
@@ -30,6 +31,7 @@ public class Primate : MonoBehaviour
         currentHealth = maxHealth;
         gameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
         gameManager.OnListUpdated += HandleListUpdate;
+        arms = transform.GetChild(0).GetChild(1);
     }
 
     // Update is called once per frame
@@ -115,7 +117,11 @@ public class Primate : MonoBehaviour
     protected IEnumerator Attack(Primate enemy)
     {
         attackOnCooldown = true;
+        Quaternion ogRotation = Quaternion.Euler(0f,0f,0f);
+        Quaternion armsUp =  Quaternion.Euler(80f,0f,0f);
+        arms.rotation = Quaternion.RotateTowards(ogRotation, armsUp, Time.deltaTime * rotationSpeed);
         enemy.TakeDamage(attackDmg);
+        arms.rotation = Quaternion.RotateTowards(armsUp, ogRotation, Time.deltaTime * rotationSpeed);
         yield return new WaitForSeconds(attackCooldown);
         attackOnCooldown = false;
     }
@@ -142,6 +148,7 @@ public class Primate : MonoBehaviour
             {
                 closestUnit = unit;
                 closestUnitExists = true;
+                closestDist = distance;
             }
 
             if (closestUnit == unit)
@@ -172,10 +179,15 @@ public class Primate : MonoBehaviour
     }
 
     private void HandleListUpdate(List<Transform> updatedList){
-        activeUnits = updatedList;
+        activeUnits.Clear();
+        activeUnits.AddRange(updatedList);
+        /*for (int i = 0; i < activeUnits.Count; i++)
+        {
+            Debug.Log(activeUnits[i].gameObject);
+        }*/
     }
 
-    private void OnDestroy()
+    protected virtual void OnDestroy()
     {
         gameManager.OnListUpdated -= HandleListUpdate;
     }
