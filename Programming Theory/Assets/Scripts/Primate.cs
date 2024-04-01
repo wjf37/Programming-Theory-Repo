@@ -18,6 +18,7 @@ public class Primate : MonoBehaviour
     protected float sightRange = 20; 
     protected float attackRange = 3;
     protected float rotationSpeed = 700;
+    private float armRotationSpeed = 200;
     protected int currentHealth;
     [SerializeField] protected float speed = 0.5f;
     [SerializeField] protected float attackCooldown = 1f;
@@ -117,11 +118,15 @@ public class Primate : MonoBehaviour
     protected IEnumerator Attack(Primate enemy)
     {
         attackOnCooldown = true;
-        Quaternion ogRotation = Quaternion.Euler(0f,0f,0f);
-        Quaternion armsUp =  Quaternion.Euler(80f,0f,0f);
-        arms.rotation = Quaternion.RotateTowards(ogRotation, armsUp, Time.deltaTime * rotationSpeed);
+        //Quaternion ogRotation = Quaternion.Euler(0f,0f,0f);
+        //Quaternion armsUp =  Quaternion.Euler(80f,0f,0f);
+        Vector3 armsUp =  new (80f,0f,0f);
+        //arms.rotation = Quaternion.RotateTowards(ogRotation, armsUp, Time.deltaTime * armRotationSpeed);
+        arms.Rotate(Vector3.right, 80f, Space.Self);
         enemy.TakeDamage(attackDmg);
-        arms.rotation = Quaternion.RotateTowards(armsUp, ogRotation, Time.deltaTime * rotationSpeed);
+        //arms.rotation = Quaternion.RotateTowards(armsUp, ogRotation, Time.deltaTime * armRotationSpeed);
+        yield return new WaitForSeconds(0.3f);
+        arms.Rotate(Vector3.right, -80f, Space.Self);
         yield return new WaitForSeconds(attackCooldown);
         attackOnCooldown = false;
     }
