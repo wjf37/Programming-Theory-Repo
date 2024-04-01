@@ -6,31 +6,27 @@ public class Gorilla : Primate
 {
     //gorilla unique = leap
     private float leapCooldown = 2f;
-    private float leapForce = 100f;
+    private float leapForce = 1500f;
     private bool leapOnCooldown = false;
 
 
     IEnumerator Leap()
     {
         leapOnCooldown = true;
-        Vector3 leapAngle = new Vector3(0,15,0);
-        Vector3 leapVector = Vector3.forward +  leapAngle;
+        yield return new WaitForSeconds(0.3f);
+        Vector3 leapAngle = new Vector3(0,0.4f,0);
+        Vector3 leapVector = -transform.forward + leapAngle;
         rb.AddForce(leapVector * leapForce, ForceMode.Impulse);
         yield return new WaitForSeconds(leapCooldown);
         leapOnCooldown = false;
     }
 
-    void LeapHandler()
-    {
-        if (!leapOnCooldown)
-        {
-            Leap();
-        }
-    }
-
     protected override void MoveToEnemy()
     {
         base.MoveToEnemy();
-        LeapHandler();
+        if (!leapOnCooldown)
+        {
+            StartCoroutine(Leap());
+        }
     }
 }
